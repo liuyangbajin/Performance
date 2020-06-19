@@ -1,7 +1,7 @@
-package com.bj.performance.launchstarter.task;
+package com.bj.performance.alpha.task;
 
 import android.os.Process;
-import com.bj.performance.launchstarter.utils.DispatcherExecutor;
+import com.bj.performance.alpha.utils.DispatcherExecutor;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -9,27 +9,16 @@ import java.util.concurrent.ExecutorService;
 
 public abstract class Task implements ITask {
 
-    // 是否正在等待
-    private volatile boolean mIsWaiting;
-
-    // 是否正在执行
-    private volatile boolean mIsRunning;
-
-    // Task是否执行完成
-    private volatile boolean mIsFinished;
-
-    // Task是否已经被分发
-    private volatile boolean mIsSend;
-
     // 当前Task依赖的Task数量（需要等待被依赖的Task执行完毕才能执行自己），默认没有依赖
-    private CountDownLatch mDepends = new CountDownLatch(dependsOn() == null ? 0 : dependsOn().size());
+    private CountDownLatch taskCountDownLatch = new CountDownLatch(dependentArr() == null ? 0 : dependentArr().size());
 
     /**
      * 当前Task等待，让依赖的Task先执行
      */
-    public void waitToSatisfy() {
+    @Override
+    public void startLock() {
         try {
-            mDepends.await();
+            taskCountDownLatch.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -38,8 +27,9 @@ public abstract class Task implements ITask {
     /**
      * 依赖的Task执行完一个
      */
-    public void satisfy() {
-        mDepends.countDown();
+    @Override
+    public void unlock() {
+        taskCountDownLatch.countDown();
     }
 
     /**
@@ -62,7 +52,7 @@ public abstract class Task implements ITask {
      * Task执行在哪个线程池，默认在IO的线程池；
      */
     @Override
-    public ExecutorService runOn() {
+    public ExecutorService runOnExecutor() {
         return DispatcherExecutor.getIOExecutor();
     }
 
@@ -78,7 +68,7 @@ public abstract class Task implements ITask {
      * 当前Task依赖的Task集合（需要等待被依赖的Task执行完毕才能执行自己），默认没有依赖
      */
     @Override
-    public List<Class<? extends Task>> dependsOn() {
+    public List<Class<? extends ITask>> dependentArr() {
         return null;
     }
 
@@ -90,33 +80,5 @@ public abstract class Task implements ITask {
     @Override
     public Runnable getTailRunnable() {
         return null;
-    }
-
-    @Override
-    public void setTaskCallBack(TaskCallBack callBack) {}
-
-    @Override
-    public boolean needCall() {
-        return false;
-    }
-
-    public void setRunning(boolean mIsRunning) {
-        this.mIsRunning = mIsRunning;
-    }
-
-    public void setFinished(boolean finished) {
-        mIsFinished = finished;
-    }
-
-    public boolean isSend() {
-        return mIsSend;
-    }
-
-    public void setSend(boolean send) {
-        mIsSend = send;
-    }
-
-    public void setWaiting(boolean mIsWaiting) {
-        this.mIsWaiting = mIsWaiting;
     }
 }

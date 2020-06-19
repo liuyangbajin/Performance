@@ -1,6 +1,7 @@
 package com.bj.performance.task;
 
-import com.bj.performance.launchstarter.task.Task;
+import com.bj.performance.alpha.task.ITask;
+import com.bj.performance.alpha.task.Task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +14,8 @@ import java.util.List;
 public class InitJPushTask extends Task {
 
     @Override
-    public List<Class<? extends Task>> dependsOn() {
-        List<Class<? extends Task>> tasks = new ArrayList<>();
+    public List<Class<? extends ITask>> dependentArr() {
+        List<Class<? extends ITask>> tasks = new ArrayList<>();
         tasks.add(InitShareTask.class);
         return tasks;
     }

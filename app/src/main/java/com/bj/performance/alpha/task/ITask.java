@@ -1,4 +1,4 @@
-package com.bj.performance.launchstarter.task;
+package com.bj.performance.alpha.task;
 
 import android.os.Process;
 
@@ -20,12 +20,22 @@ public interface ITask {
     /**
      * Task执行所在的线程池，可指定，一般默认
      */
-    Executor runOn();
+    Executor runOnExecutor();
 
     /**
-     * 存放需要先执行的task任务集合
+     * 存放需要先执行的task任务集合(也就是添加需要先执行的依赖)
      */
-    List<Class<? extends Task>> dependsOn();
+    List<Class<? extends ITask>> dependentArr();
+
+    /**
+     * 开始锁
+     * */
+    void startLock();
+
+    /**
+     * 解锁
+     * */
+    void unlock();
 
     /**
      * 异步线程执行的Task是否需要在被调用await的时候等待，默认不需要
@@ -43,8 +53,4 @@ public interface ITask {
      * Task主任务执行完成之后需要执行的任务
      */
     Runnable getTailRunnable();
-
-    void setTaskCallBack(TaskCallBack callBack);
-
-    boolean needCall();
 }

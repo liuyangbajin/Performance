@@ -1,4 +1,4 @@
-package com.bj.performance.launchstarter.sort;
+package com.bj.performance.alpha.sort;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

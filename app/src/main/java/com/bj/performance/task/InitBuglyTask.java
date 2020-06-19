@@ -1,6 +1,6 @@
 package com.bj.performance.task;
 
-import com.bj.performance.launchstarter.task.Task;
+import com.bj.performance.alpha.task.Task;
 
 /**
  * @author: lybj

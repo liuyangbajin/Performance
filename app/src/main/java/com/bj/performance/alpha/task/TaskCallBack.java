@@ -1,4 +1,4 @@
-package com.bj.performance.launchstarter.task;
+package com.bj.performance.alpha.task;
 
 public interface TaskCallBack {
 

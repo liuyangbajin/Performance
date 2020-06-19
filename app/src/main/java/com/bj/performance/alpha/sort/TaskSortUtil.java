@@ -1,11 +1,13 @@
-package com.bj.performance.launchstarter.sort;
+package com.bj.performance.alpha.sort;
 
 
+import android.os.Build;
 import android.util.ArraySet;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
-import com.bj.performance.launchstarter.task.Task;
+import com.bj.performance.alpha.task.Task;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,24 +15,24 @@ import java.util.Set;
 
 public class TaskSortUtil {
 
-    // 高优先级的Task
-    private static List<Task> sNewTasksHigh = new ArrayList<>();
+    private static List<Task> taskArrayList = new ArrayList<>();
 
     /**
      * 任务的有向无环图的拓扑排序
      *
      * @return
      */
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public static synchronized List<Task> getSortResult(List<Task> originTasks,
                                                         List<Class<? extends Task>> clsLaunchTasks) {
         Set<Integer> dependSet = new ArraySet<>();
         Graph graph = new Graph(originTasks.size());
         for (int i = 0; i < originTasks.size(); i++) {
             Task task = originTasks.get(i);
-            if (task.isSend() || task.dependsOn() == null || task.dependsOn().size() == 0) {
+            if (task.dependentArr() == null || task.dependentArr().size() == 0) {
                 continue;
             }
-            for (Class cls : task.dependsOn()) {
+            for (Class cls : task.dependentArr()) {
                 int indexOfDepend = getIndexOfTask(originTasks, clsLaunchTasks, cls);
                 if (indexOfDepend < 0) {
                     throw new IllegalStateException(task.getClass().getSimpleName() +
@@ -65,15 +67,15 @@ public class TaskSortUtil {
             }
         }
         // 顺序：被别人依赖的————》需要提升自己优先级的————》需要被等待的————》没有依赖的
-        sNewTasksHigh.addAll(newTasksDepended);
-        sNewTasksHigh.addAll(newTasksRunAsSoon);
-        newTasksAll.addAll(sNewTasksHigh);
+        taskArrayList.addAll(newTasksDepended);
+        taskArrayList.addAll(newTasksRunAsSoon);
+        newTasksAll.addAll(taskArrayList);
         newTasksAll.addAll(newTasksWithOutDepend);
         return newTasksAll;
     }
 
     public static List<Task> getTasksHigh() {
-        return sNewTasksHigh;
+        return taskArrayList;
     }
 
     /**

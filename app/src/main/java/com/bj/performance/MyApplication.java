@@ -3,7 +3,7 @@ package com.bj.performance;
 import android.app.Application;
 import android.os.Debug;
 
-import com.bj.performance.launchstarter.TaskDispatcher;
+import com.bj.performance.alpha.TaskManager;
 import com.bj.performance.task.InitBaiduMapTask;
 import com.bj.performance.task.InitBuglyTask;
 import com.bj.performance.task.InitJPushTask;
@@ -76,15 +76,14 @@ public class MyApplication extends Application {
 //            Debug.stopMethodTracing();
 
         // 使用启动器的方式
-        System.out.println("MyApplication开始执行");
-        TaskDispatcher.init(this);
-        TaskDispatcher instance = TaskDispatcher.createInstance();
-        instance.addTask(new InitBuglyTask()) // 默认添加，并发处理
-                .addTask(new InitBaiduMapTask())  // 在这里需要先处理了另外一个耗时任务initShareSDK，才能再处理它
-                .addTask(new InitJPushTask())  // 等待主线程处理完毕，再进行执行
-                .addTask(new InitShareTask())
+        System.out.println("************************MyApplication开始执行************************");
+        TaskManager manager = TaskManager.getInstance(this);
+        manager.add(new InitBuglyTask()) // 默认添加，并发处理
+                .add(new InitBaiduMapTask())  // 在这里需要先处理了另外一个耗时任务initShareSDK，才能再处理它
+                .add(new InitJPushTask())  // 等待主线程处理完毕，再进行执行
+                .add(new InitShareTask())
                 .start();
-        instance.await();
-        System.out.println("MyApplication执行完毕");
+        manager.startLock();
+        System.out.println("************************MyApplication执行完毕************************");
     }
 }

@@ -1,10 +1,10 @@
-package com.bj.performance.launchstarter;
+package com.bj.performance.alpha;
 
 import android.os.Looper;
 import android.os.MessageQueue;
 
-import com.bj.performance.launchstarter.task.DispatchRunnable;
-import com.bj.performance.launchstarter.task.Task;
+import com.bj.performance.alpha.task.TaskRunnable;
+import com.bj.performance.alpha.task.Task;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -14,7 +14,7 @@ import java.util.Queue;
  * @date: 2020/5/26
  * @Description:
  */
-public class IldeTaskDispatcher {
+public class IldeTaskManager {
 
     private Queue<Task> mIldeQueue = new LinkedList<>();
 
@@ -26,15 +26,15 @@ public class IldeTaskDispatcher {
             if(mIldeQueue.size() > 0){
 
                 // 如果CPU空闲了，
-                Task IldeTask = mIldeQueue.poll();
-                new DispatchRunnable(IldeTask).run();
+                Task idleTask = mIldeQueue.poll();
+                new TaskRunnable(idleTask).run();
             }
             // 如果返回false，则移除该 IldeHandler
             return !mIldeQueue.isEmpty();
         }
     };
 
-    public IldeTaskDispatcher addTask(Task task){
+    public IldeTaskManager addTask(Task task){
 
         mIldeQueue.add(task);
         return this;
