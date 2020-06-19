@@ -33,14 +33,6 @@ public abstract class Task implements ITask {
     }
 
     /**
-     * 是否需要尽快执行，解决特殊场景的问题：一个Task耗时非常多但是优先级却一般，很有可能开始的时间较晚，
-     * 导致最后只是在等它，这种可以早开始。
-     */
-    public boolean needRunAsSoon() {
-        return false;
-    }
-
-    /**
      * Task的优先级，运行在主线程则不要去改优先级
      */
     @Override
@@ -80,5 +72,9 @@ public abstract class Task implements ITask {
     @Override
     public Runnable getTailRunnable() {
         return null;
+    }
+
+    public boolean needRunAsSoon() {
+        return false;
     }
 }

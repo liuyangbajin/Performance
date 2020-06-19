@@ -16,27 +16,27 @@ import java.util.Queue;
  */
 public class IldeTaskManager {
 
-    private Queue<Task> mIldeQueue = new LinkedList<>();
+    private Queue<Task> ildeTaskQueue = new LinkedList<>();
 
     private MessageQueue.IdleHandler idleHandler = new MessageQueue.IdleHandler(){
 
         @Override
         public boolean queueIdle() {
 
-            if(mIldeQueue.size() > 0){
+            if(ildeTaskQueue.size() > 0){
 
                 // 如果CPU空闲了，
-                Task idleTask = mIldeQueue.poll();
+                Task idleTask = ildeTaskQueue.poll();
                 new TaskRunnable(idleTask).run();
             }
             // 如果返回false，则移除该 IldeHandler
-            return !mIldeQueue.isEmpty();
+            return !ildeTaskQueue.isEmpty();
         }
     };
 
     public IldeTaskManager addTask(Task task){
 
-        mIldeQueue.add(task);
+        ildeTaskQueue.add(task);
         return this;
     }
 
